@@ -3722,8 +3722,10 @@ class GraphProto:
             elif i_name in self._nodes:
                 continue
             else:
+                relay_i_name = "arr_" + str(self._num_input)
+                self._renames[i_name] = relay_i_name
+                self._input_names.append(relay_i_name)
                 self._num_input += 1
-                self._input_names.append(i_name)
                 if i_name in self._shape:
                     i_shape = self._shape[i_name]
                 else:
@@ -3738,8 +3740,8 @@ class GraphProto:
                     dtype = self._dtype[i_name] if i_name in self._dtype else d_type
                 else:
                     dtype = d_type
-                self._nodes[i_name] = new_var(i_name, shape=i_shape, dtype=dtype)
-            self._inputs[i_name] = self._nodes[i_name]
+                self._nodes[relay_i_name] = new_var(relay_i_name, shape=i_shape, dtype=dtype)
+            self._inputs[relay_i_name] = self._nodes[relay_i_name]
         # Only check user inputs in the outer-most graph scope.
         if self._old_manager is None:
             assert all(
